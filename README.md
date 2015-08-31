@@ -1,5 +1,9 @@
 Yii 2 Chat Project
 ===============================
+установите доступы на создание подпапок  для папок
+frontend/runtime
+frontend/web
+-----------------------------------
  2 контроллера
 -----------------------------------
 1. frontend\controllers\ShowmodalController
