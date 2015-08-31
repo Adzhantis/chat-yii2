@@ -8,14 +8,14 @@ DIRECTORY STRUCTURE
 
 db_dump
 --------------------------------------------------------------------------------------------
-    yii-advanced.sql                dump db
+    yii-advanced.sql                дамп базы
 
 common
 ----------------------------------------------------------------------------------------------
-    config/main-local.php           contains connect to db(yii-advanced)
+    config/main-local.php           настройки для доступа к базу
 
 frontend
 ------------------------------------------------------------------------------------------
-    web/index.php                   entry point to chat
+    web/index.php                   входной скрипт в приложение
 
 
