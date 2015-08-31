@@ -2,13 +2,13 @@ Yii 2 Chat Project
 ===============================
 С базой работают 2 модели :
 
-1.Chat
+1.frontend\models\Chat
 
-2.User
+2.frontend\models\User
 
 Чат выполнен в виде виджета
 
-1.common/widgets/ChatRoom
+1.common\widgets\ChatRoom
 
 не выполнил сохранение данных в файлы
 
