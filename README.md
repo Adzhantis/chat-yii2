@@ -7,6 +7,7 @@ Yii 2 Chat Project
 2.User
 
 Чат выполнен в виде виджета
+
 common/widgets/ChatRoom
 
 не выполнил сохранение данных в файлы
