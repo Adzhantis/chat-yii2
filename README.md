@@ -2,12 +2,13 @@ Yii 2 Chat Project
 ===============================
  2 контроллера
  -----------------------------------
-1. frontend\controllers\ShowmodalController        отвечает за регистрацию, логинизацию, вывод загруженных файлов
-2. frontend\controllers\SiteController             отвечает за отображение чата, logout, и взаимодействует с виджетом
+1. frontend\controllers\ShowmodalController
+                                        отвечает за регистрацию, логинизацию, вывод загруженных файлов
+2. frontend\controllers\SiteController
+                                отвечает за отображение чата, logout, и взаимодействует с виджетом
  2 модели :
 --------------------------------
 1.frontend\models\Chat
-
 2.frontend\models\User
 
 Чат выполнен в виде виджета
