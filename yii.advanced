@@ -1,0 +1,78 @@
+server {
+	server_name yii.advanced www.yii.advanced;
+	
+	listen 127.0.0.2:80;
+	root /home/igor/git/advanced/frontend/web;
+	#root /home/www;
+	index index.html index.htm index.php;
+	access_log /var/log/kmz-ua.com_access_log;
+	error_log /var/log/kmz-ua.com_error_log;
+	
+	if ($request_method !~ ^(GET|HEAD|POST)$) {
+		return 403;
+	}
+	location ~ /\. {
+		deny all;
+		access_log off;
+		log_not_found off;
+		expires 30d;
+	}
+	location ~ \/favicon.ico {
+		access_log off;
+		log_not_found off;
+		expires 1d;
+	}
+	location ~* \.(js|css|png|jpg|jpeg|gif|swf|txt)$ {
+		expires 14d;
+	}
+	location /compare {
+	        if (!-e $request_filename) {
+        		rewrite ^(.*)$ /compare/index.php?$1 last;
+        	}
+    	}
+
+#location /sitemap.xml {
+#        		rewrite ^(.*)$ http://$host/sitemap;
+#        	}
+
+
+
+
+
+
+    	location / {
+	        if (!-e $request_filename) {
+        		rewrite ^(.*)$ /index.php?$1 last;               
+        	}
+    	}
+
+    	location ~ ^/(protected|framework|themes/\w+/views) {
+        	deny  all;
+    	}
+
+	fastcgi_param GATEWAY_INTERFACE CGI/1.1;
+	fastcgi_param SERVER_SOFTWARE nginx;
+	fastcgi_param QUERY_STRING $query_string;
+	fastcgi_param REQUEST_METHOD $request_method;
+	fastcgi_param CONTENT_TYPE $content_type;
+	fastcgi_param CONTENT_LENGTH $content_length;
+	fastcgi_param SCRIPT_FILENAME /home/igor/kmz-ua.com/public_html$fastcgi_script_name;
+	fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+	fastcgi_param REQUEST_URI $request_uri;
+	fastcgi_param DOCUMENT_URI $document_uri;
+	fastcgi_param DOCUMENT_ROOT /home/igor/kmz-ua.com/public_html;
+	fastcgi_param SERVER_PROTOCOL $server_protocol;
+	fastcgi_param REMOTE_ADDR $remote_addr;
+	fastcgi_param REMOTE_PORT $remote_port;
+	fastcgi_param SERVER_ADDR $server_addr;
+	fastcgi_param SERVER_PORT $server_port;
+	fastcgi_param SERVER_NAME $server_name;
+#	fastcgi_param HTTPS $https;
+	location ~ \.php$ {
+		try_files $uri =404;
+		fastcgi_pass unix:/var/run/php-fpm.sock;
+	}
+         if ($host !~* ^www\.) {
+                 rewrite ^(.*)$ http://www.$host$1 permanent;
+                     } 
+}
