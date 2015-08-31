@@ -85,9 +85,7 @@ class ChatRoom extends Widget {
             /**
              * сохраняем сообщения в frontend/web/files/chat/chat.txt
              */
-            if (Yii::$app->fs->getVisibility('chat/chat.txt') === AdapterInterface::VISIBILITY_PRIVATE) {
-                Yii::$app->fs->setVisibility('chat/chat.txt', AdapterInterface::VISIBILITY_PUBLIC);
-            }
+
             if(!$model->to_file()){
                 throw new BadRequestHttpException("can't save messages to file", 405);
             }

@@ -11,10 +11,12 @@ use Yii;
  * @property string $message
  * @property integer $userId
  * @property string $updateDate
+ *
  */
 class Chat extends \yii\db\ActiveRecord {
 
     public $userModel;
+    public $file ='/chat.txt';
     /**
      * @inheritdoc
      */
@@ -23,7 +25,11 @@ class Chat extends \yii\db\ActiveRecord {
     }
 
     /**
+     *
+     *
      * @inheritdoc
+     *
+     *
      */
     public function rules() {
         return [
@@ -61,11 +67,6 @@ class Chat extends \yii\db\ActiveRecord {
         return static::find()->orderBy('id desc')->limit(10)->all();
     }
 
-       public static function records2() {
-           //Yii::$app->fs->
-        return static::find()->orderBy('id desc')->limit(10)->all();
-    }
-
 
     /**
      * @return string
@@ -89,18 +90,18 @@ class Chat extends \yii\db\ActiveRecord {
     }
 
     public function to_file(){
-        $exists = Yii::$app->fs->has('chat/chat.txt');
+        $exists = Yii::$app->fs->has(Yii::$app->params['chat_txt']);
 
         if($exists){
-            $is_arr = json_decode(Yii::$app->fs->read('chat/chat.txt'), true);
+            $is_arr = json_decode(Yii::$app->fs->read(Yii::$app->params['chat_txt']), true);
             if( is_array($is_arr)){
                 array_push($is_arr, $this->attributes);
-                if(!Yii::$app->fs->put('chat/chat.txt', json_encode($is_arr))){
+                if(!Yii::$app->fs->put(Yii::$app->params['chat_txt'], json_encode($is_arr))){
                     return false;
                 }
             }
         }else{
-            if(!Yii::$app->fs->put('chat/chat.txt', json_encode($this->attributes))){
+            if(!Yii::$app->fs->put(Yii::$app->params['chat_txt'], json_encode($this->attributes))){
                 return false;
             }
         }
