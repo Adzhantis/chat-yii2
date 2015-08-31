@@ -5,8 +5,10 @@ Yii 2 Chat Project
 DIRECTORY STRUCTURE
 -------------------
 
+
 db_dump
     yii-advanced.sql                 dump db
+
 common
     config/main-local.php            contains connect to db(yii-advanced)
 
