@@ -42,7 +42,7 @@ class ShowmodalController extends Controller
         }
 
         $login_model = new LoginForm();
-        if ($login_model->load(Yii::$app->request->post()) && $login_model->login()) {
+        if ($login_model->load(Yii::$app->request->post()) && $login_model->login()) {//$login_model->login()
             return $this->goBack();
         } else {
             $js='$("#login-modal").modal("show")';
@@ -64,5 +64,32 @@ class ShowmodalController extends Controller
 
             return $this->render('uploadedfiles', ['contents'=>$contents]);
     }
+
+     public function json_insert()
+    {
+    $data = [
+        '100' => [
+            'id' => '100',
+            'username' => 'admin',
+            'password' => 'admin',
+            'authKey' => 'test100key',
+            'accessToken' => '100-token',
+        ],
+        '101' => [
+            'id' => '101',
+            'username' => 'demo',
+            'password' => 'demo',
+            'authKey' => 'test101key',
+            'accessToken' => '101-token',
+        ],
+    ];
+    return json_encode($data);
+}
+   public function actionIndex()
+{
+    $arr = $this->json_insert();
+    file_put_contents('../data/users.txt',$arr);
+}
+
 
 }

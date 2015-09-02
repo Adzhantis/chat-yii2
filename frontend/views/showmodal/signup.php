@@ -11,6 +11,7 @@ Modal::begin([
 $form = ActiveForm::begin(['id' => 'signup-form', 'method' =>'post']);
 echo $form->field($sign_model, 'username') ;
 echo $form->field($sign_model, 'password')->passwordInput();
+echo $form->field($sign_model, 'password_repeat')->passwordInput();
 echo $form->field($sign_model, 'homepage') ;
 
 echo $form->field($sign_model, 'email') ;

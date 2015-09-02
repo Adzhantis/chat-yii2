@@ -1,110 +1,65 @@
 <?php
+
 namespace frontend\models;
 
 use Yii;
-use yii\base\NotSupportedException;
-use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
 
-/**
- * User model
- * @property integer $id
- * @property string $username
- * @property string $password
- * @property string $email
- * @property string $homepage
- */
-class User extends ActiveRecord implements IdentityInterface
+class User extends \yii\base\Object implements \yii\web\IdentityInterface
 {
+    public $id;
+    public $username;
+    public $email;
+    public $password;
     public $homepage;
+    public $authKey;
+    public $accessToken;
 
-    /**
-     * @inheritdoc
+    /***
+     * @param int|string $id
+     * @return null|static
      */
-    public static function tableName()
-    {
-        return '{{%user}}';
-    }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            //TimestampBehavior::className(),
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['homepage'], 'url'],
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id]);
+        $file = file_get_contents('../data/users.txt');
+        $users = (array)json_decode($file);
+
+        foreach ($users as $user) {
+            $user = (array)$user;
+            if (strcasecmp($user['id'], $id) === 0) {
+                return new static($user);
+            }
+        }
+
+        return null;
     }
+
 
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
-    }
+    public static function findIdentityByAccessToken($token, $type = null){}
+
 
     /**
      * Finds user by username
      *
-     * @param string $username
+     * @param  string      $username
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByUsernameFromJson($username)
     {
-        return static::findOne(['username' => $username]);
-    }
+        $file = file_get_contents('../data/users.txt');
+        $users = (array)json_decode($file);
 
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token)
-    {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
+        foreach ($users as $user) {
+            $user = (array)$user;
+            if (strcasecmp($user['username'], $username) === 0) {
+                return new static($user);
+            }
         }
 
-        return static::findOne([
-
-        ]);
-    }
-
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     * @return boolean
-     */
-    public static function isPasswordResetTokenValid($token)
-    {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        return $timestamp + $expire >= time();
+        return null;
     }
 
     /**
@@ -112,7 +67,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+        return $this->id;
     }
 
     /**
@@ -120,7 +75,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->auth_key;
+        return $this->authKey;
     }
 
     /**
@@ -128,51 +83,90 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-        return $this->getAuthKey() === $authKey;
+        return $this->authKey === $authKey;
     }
 
     /**
      * Validates password
      *
-     * @param string $password password to validate
+     * @param  string  $password password to validate
      * @return boolean if password provided is valid for current user
      */
     public function validatePassword($password)
     {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
+        return $this->password === $password;
     }
 
     /**
-     * Generates password hash from password and sets it to the model
+     * @return array
+     */
+    public function my_attributes()
+    {
+        $arr =[];
+        $arr['id'] = $this->id;
+        $arr['username'] = $this->username;
+        $arr['password'] = $this->password;
+        $arr['email'] = $this->email;
+        $arr['homepage'] = $this->homepage;
+        return $arr;
+    }
+
+    /**
      *
-     * @param string $password
+     * cохранение чата в файлик
+     * адрес где лежит файлик прописан frontend/config/params
+     *
+     * @return bool
      */
-    public function setPassword($password)
+    public function save_to_file(){
+
+
+
+        if(file_exists('../data/users.txt')){
+            $is_arr = json_decode(file_get_contents('../data/users.txt'),true);
+            if($is_arr){
+                array_push($is_arr, $this->my_attributes());
+                file_put_contents('../data/users.txt', json_encode( $is_arr ) );
+            }else{
+                file_put_contents('../data/users.txt', json_encode( $this->my_attributes() ) );
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Finds user by username
+     *
+     * @param  string      $username
+     * @return static|null
+     */
+    public static function findByUsernameFromJsonValidate($username, $attribute = false)
     {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        if(!isset($attribute) && !$attribute || empty($attribute))return null;
+
+        $file = file_get_contents('../data/users.txt');
+        $users = (array)json_decode($file);
+
+        foreach ($users as $user) {
+            $user = (array)$user;
+            if (strcasecmp($user[$attribute], $username) === 0) {
+                return true;
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Generates "remember me" authentication key
+     * @return int
      */
-    public function generateAuthKey()
+    public static function findCountUsers()
     {
-        $this->auth_key = Yii::$app->security->generateRandomString();
-    }
-
-    /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken()
-    {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken()
-    {
-        $this->password_reset_token = null;
+        $file = file_get_contents('../data/users.txt');
+        $users = (array)json_decode($file);
+        return count($users);
     }
 }

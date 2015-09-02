@@ -42,7 +42,7 @@ AppAsset::register($this);
 //    ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup',  'url'=>['/showmodal/signup']];
-        $menuItems[] = ['label' => 'Login',  'url'=>['/showmodal/login']];
+        $menuItems[] = ['label' => 'Login',  'url'=>['/showmodal/login'], 'linkOptions' => ['data-method' => 'post']];
 
     } else {
         $menuItems[] = [
@@ -62,6 +62,7 @@ AppAsset::register($this);
     <div class="container">
 
         <?= Alert::widget() ?>
+
         <?= $content ?>
     </div>
 </div>

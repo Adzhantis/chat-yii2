@@ -19,9 +19,9 @@ return [
     ],
 
     'components' => [
-        //'db'=>[require(dirname(__FILE__) . '/db.php'],
         'user' => [
             'identityClass' => 'frontend\models\User',
+            'loginUrl' => 'index.php?r=showmodal/login',
             'enableAutoLogin' => true,
         ],
         'log' => [

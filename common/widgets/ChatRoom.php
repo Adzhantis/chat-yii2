@@ -52,7 +52,8 @@ class ChatRoom extends Widget {
         $model =        new Chat();
         $upload_model = new UploadForm();
         $model->userModel = $this->userModel;
-        $data = $model->data();
+        //$data = $model->data();
+        $data =  $model->data_from_file();
         return $this->render('index', [
                     'data' => $data,
                     'url' => $this->url,
@@ -86,18 +87,22 @@ class ChatRoom extends Widget {
              * сохраняем сообщения в frontend/web/files/chat/chat.txt
              */
 
-            if(!$model->to_file()){
-                throw new BadRequestHttpException("can't save messages to file", 405);
-            }
-
-            if ($model->save()) {
-                echo $model->data();
-            } else {
+            if(!$model->save_to_file()){
                 print_r($model->getErrors());
                 exit(0);
+            }else{
+                echo $model->data_from_file();
             }
+
+            //if ($model->save()) {
+           //     echo $model->data();
+          //  } else {
+           //     print_r($model->getErrors());
+           //     exit(0);
+           // }
         } else {
-            echo $model->data();
+           // echo $model->data();
+            echo $model->data_from_file();
         }
     }
 }

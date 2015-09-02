@@ -2,8 +2,6 @@
 namespace frontend\controllers;
 
 use Yii;
-use frontend\models\LoginForm;
-use frontend\models\SignupForm;
 use frontend\models\UploadForm;
 use yii\web\UploadedFile;
 use yii\web\BadRequestHttpException;
@@ -82,8 +80,12 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->getUser()->isGuest) {
+            Yii::$app->getResponse()->redirect(Yii::$app->getUser()->loginUrl);
+        }
         return $this->render('index');
     }
+
     /**
      *
      */
@@ -92,9 +94,9 @@ class SiteController extends Controller
     }
 
 
-
     /**
-     * @return string|void
+     * @return string
+     * @throws BadRequestHttpException
      */
     public function actionUpload()
     {

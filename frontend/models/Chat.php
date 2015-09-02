@@ -3,7 +3,7 @@
 namespace frontend\models;
 
 use Yii;
-
+use yii\base\Model;
 /**
  * This is the model class for table "chat".
  *
@@ -13,23 +13,15 @@ use Yii;
  * @property string $updateDate
  *
  */
-class Chat extends \yii\db\ActiveRecord {
+class Chat extends Model {
 
     public $userModel;
-    public $file ='/chat.txt';
-    /**
-     * @inheritdoc
-     */
-    public static function tableName() {
-        return 'chat';
-    }
+    public $message;
+    public $userId;
+    public $updateDate;
 
     /**
-     *
-     *
-     * @inheritdoc
-     *
-     *
+     * @return array
      */
     public function rules() {
         return [
@@ -39,6 +31,9 @@ class Chat extends \yii\db\ActiveRecord {
         ];
     }
 
+    /**
+     * @return mixed
+     */
     public function getUser() {
         if (isset($this->userModel))
             return $this->hasOne($this->userModel, ['id' => 'userId']);
@@ -47,7 +42,7 @@ class Chat extends \yii\db\ActiveRecord {
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
     public function attributeLabels() {
         return [
@@ -60,52 +55,53 @@ class Chat extends \yii\db\ActiveRecord {
 
     public function beforeSave($insert) {
         $this->userId = Yii::$app->user->id;
+        $this->updateDate = date('Y-m-d H:i:s');
         return parent::beforeSave($insert);
     }
-
-    public static function records() {
-        return static::find()->orderBy('id desc')->limit(10)->all();
+    /**
+     * @return array
+     */
+    public function my_attributes()
+    {
+        $arr =[];
+        $arr['userId'] = $this->userId;
+        $arr['updateDate'] = date('Y-m-d H:i:s');
+        $arr['message'] = $this->message;
+        return $arr;
     }
-
+    /**
+     *
+     * cохранение чата в файлик
+     *
+     *
+     * @return bool
+     */
+    public function save_to_file(){
+        if(file_exists('../data/chat.txt')){
+            $is_arr = json_decode(file_get_contents('../data/chat.txt'),true);
+                array_push($is_arr, $this->my_attributes());
+                file_put_contents('../data/chat.txt', json_encode( $is_arr ) );
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @return string
      */
-    public function data() {
+    public function data_from_file(){
+
         $output = '';
-        $i = 0;
-        $models = Chat::records();
-        if ($models)
-            foreach ($models as $model) {
-
-                    if(is_object($model->user)) {
-                        $output .= '<div class="chat-box-left">'.$model->message.'</div>
-                                <div class="chat-box-name-left">'.$model->user->username.'</div>
+        if(file_exists('../data/chat.txt')){
+            $is_arr = json_decode(file_get_contents('../data/chat.txt'),true);
+            if ($is_arr)
+                foreach ($is_arr as $model) {
+                        $output .= '<div class="chat-box-left">'.$model["message"].'</div>
+                                <div class="chat-box-name-left">'.User::findIdentity($model["userId"])->username.'</div>
                                 <hr class="hr-clas" />';
-                        $i++;
-                    }
-            }
-
-        return $output;
-    }
-
-    public function to_file(){
-        $exists = Yii::$app->fs->has(Yii::$app->params['chat_txt']);
-
-        if($exists){
-            $is_arr = json_decode(Yii::$app->fs->read(Yii::$app->params['chat_txt']), true);
-            if( is_array($is_arr)){
-                array_push($is_arr, $this->attributes);
-                if(!Yii::$app->fs->put(Yii::$app->params['chat_txt'], json_encode($is_arr))){
-                    return false;
                 }
-            }
-        }else{
-            if(!Yii::$app->fs->put(Yii::$app->params['chat_txt'], json_encode($this->attributes))){
-                return false;
-            }
-        }
-        return true;
-    }
 
+            return $output;
+        }
+    }
 }

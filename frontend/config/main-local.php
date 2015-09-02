@@ -18,14 +18,5 @@ if (!YII_ENV_TEST) {
     $config['modules']['gii'] = 'yii\gii\Module';
 }
 
-$config['components']['db'] = array(
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii-advanced',
-    'username' => 'root',
-    'password' => '1111',
-    'charset' => 'utf8',
-    // 'enableSchemaCache' => true,
-    // 'schemaCacheDuration' => 3600,
-);
 
 return $config;
